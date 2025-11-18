@@ -11,38 +11,66 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
+from datetime import datetime
 
-# Example schemas (replace with your own):
+# Theatre-specific schemas
 
+class Event(BaseModel):
+    """
+    Events collection schema
+    Collection name: "event"
+    """
+    title: str = Field(..., description="Event title")
+    description: Optional[str] = Field(None, description="Short description")
+    date: datetime = Field(..., description="Event date and time")
+    language: str = Field("de", description="Language of performance: de/en")
+    category: str = Field("Kabarett", description="Category like Kabarett, Impro, Stand-up")
+    duration_min: Optional[int] = Field(None, description="Duration in minutes")
+    ticket_url: Optional[HttpUrl] = Field(None, description="External ticket URL")
+    cover_image: Optional[HttpUrl] = Field(None, description="Image for the event")
+
+class Owner(BaseModel):
+    """
+    Owners collection schema
+    Collection name: "owner"
+    """
+    name: str
+    role: str
+    bio_de: str
+    bio_en: str
+    avatar: Optional[HttpUrl] = None
+
+class Info(BaseModel):
+    """
+    General theatre info
+    Collection name: "info"
+    """
+    name: str
+    address: str
+    city: str
+    country: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    website: Optional[HttpUrl] = None
+    description_de: Optional[str] = None
+    description_en: Optional[str] = None
+    how_to_get_de: Optional[str] = None
+    how_to_get_en: Optional[str] = None
+    video_reel_url: Optional[HttpUrl] = None
+
+# Keep example schemas for reference
 class User(BaseModel):
-    """
-    Users collection schema
-    Collection name: "user" (lowercase of class name)
-    """
-    name: str = Field(..., description="Full name")
-    email: str = Field(..., description="Email address")
-    address: str = Field(..., description="Address")
-    age: Optional[int] = Field(None, ge=0, le=120, description="Age in years")
-    is_active: bool = Field(True, description="Whether user is active")
+    name: str
+    email: str
+    address: str
+    age: Optional[int] = None
+    is_active: bool = True
 
 class Product(BaseModel):
-    """
-    Products collection schema
-    Collection name: "product" (lowercase of class name)
-    """
-    title: str = Field(..., description="Product title")
-    description: Optional[str] = Field(None, description="Product description")
-    price: float = Field(..., ge=0, description="Price in dollars")
-    category: str = Field(..., description="Product category")
-    in_stock: bool = Field(True, description="Whether product is in stock")
-
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+    title: str
+    description: Optional[str] = None
+    price: float
+    category: str
+    in_stock: bool = True
